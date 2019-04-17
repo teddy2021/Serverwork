@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Main</title>
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="jquery-mobile-theme-223036-0/themes/Red-Monochrome.min.css" />
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+
+<style>
+
+    .blue_box, .green_box {
+        display: block;
+        clear:both;
+        margin: 10px;
+        padding: auto;
+
+    }
+
+    .blue_box span {
+        background-color: blue;
+        color: white;
+        padding: 10px 5px;
+        display: block;
+        float: right;
+    }
+
+    .green_box span {
+        background-color: green;
+        color: white;
+        padding: 10px 5px;
+        display: block;
+        float: left;
+    }
+
+</style>
+
+<body>
+
+    <div data-role="page" id="home">
+            <div data-role="header">
+            <H1>Chatrooms</H1>
+        </div>
+
+
+        <div data-role="main" class="ui-content">
+            <label for="rooms">Rooms Available</label>
+                <br>
+                <div data-role="controlgroup" data-direction="horizontal" id="rooms">
+                </div>
+            <br>
+            <br>
+            <label for="add">Create a new room</label>
+            <br>
+
+            <form id="add">
+                <input type="text" id="ntitle" required>
+                <button id="sub">Create</button>
+            </form>
+        </div>
+
+
+        <div data-role="footer">
+            <h4>&copy; Kody M 2019</h4>
+        </div>
+    </div>
+
+
+
+
+
+    <div data-role="page" id="chat">
+        <div data-role="header">
+            <h1 id="title"></h1>
+        </div>
+
+        <div data-role="main" class="ui-content">
+            <div id="messagefield">
+                    <label for="messagefield">Messages</label>
+                <div id="messages"></div>
+                <textarea id="editor" required placeholder="Message Text"></textarea>
+                <button id="send" data-role="button">Send</button>
+            </div>
+        </div>
+
+        <div data-role="footer">
+            <h3>&copy; Kody M, 2019</h3>
+        </div>
+    </div>
+
+</body>
+
+
+<script>
+
+    // Jquery for home page
+
+    $('#home').on('pagebeforeshow', function() {
+        $.get('Pages', function(data) {
+            var txt = data.split("\n");
+            if ($('#rooms').val() != data) {
+            for (var i = 0; i < txt.length; i += 1) {
+                $('#rooms').append(txt[i]);
+            }
+        }
+        });
+    });
+
+    $('#home').on('pagebeforehide', function(){
+        $('#rooms').empty();
+    });
+
+    $('#home').on('pagebeforehide', function(){
+        $.mobile.changePage('#chat');
+    });
+
+    $('#sub').on('click', function(){
+        var room = $('#ntitle').val();
+        $.ajax({
+            url: "New",
+            method: 'POST',
+            data: {title: room},
+            dataType: 'string',
+            success: function() {
+                console.log(room);
+                $('#title').text(room);
+                $.mobile.changePage('#chat');
+
+            }
+        });
+    });
+
+
+    $('document').ready(function() {
+        $('#rooms').on('click', 'a', function () {
+            $('#title').text($(this).text());
+        });
+    });
+
+    // Jquery for chat page
+
+    $('#chat').on('pagebeforeshow', function(){
+        getPages()
+
+    });
+
+    function getPages(){
+        var ttl = $('#title').text();
+        console.log(ttl);
+        $.ajax({
+            url: "Messages",
+            method: 'GET',
+            data: {title: ttl, origin: 'Pages'},
+            success: function(data) {
+                var txt = data.split("\n");
+                console.log(txt);
+                console.log(txt.length);
+                for (var i = 0; i < txt.length; i += 1) {
+                    var pair = txt[i];
+                    pair = pair.split(":");
+                    var usr = pair[0];
+                    var msg = pair[1];
+                    if (typeof(msg) != "undefined") {
+                        $('#messages').append('<div class="green_box"><span>' + pair[1] + '</span></div>');
+                        $('#messages').append('<br><br>');
+                    }
+                }
+                setTimeout(checkChanged(), 30000);
+            }
+        });
+    }
+
+    $('#chat').on('pagebeforehide', function () {
+        $('#messages').empty();
+    });
+
+        $('#send').on('click', function () {
+            var message = $('#editor').val();
+            var room = $('#title').text();
+            $.post("Messages", {user: "n/a", message: message, room: room}, function (data) {
+                $('#messages').append('<div class="blue_box"><span>' + message + '</span></div>');
+                $('#editor').val('');
+            })
+        });
+
+
+    function checkChanged(){
+        var room = $('#title').val();
+        $.ajax({
+            type: "GET",
+            ifModified: true,
+            async: false,
+            url: "Messages",
+            data: {room: room},
+            success: function (){
+                $('#messages').empty();
+                getPages()
+            }
+        })
+    }
+
+</script>
+
+</html>
