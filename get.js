@@ -7,11 +7,20 @@ const con = mysql.createConnection({
 	database:'chat'
 });
 
-function get(req, res){
-	var values = {
-		room: req.search('room')
-	}
-	if(req.url == 'Pages'){
+
+
+exports.get = function (req, res){
+	con.connect((err) => {
+		if(err){
+			throw err;
+		}
+		else{
+			console.log('Connection established for Gets');
+		}
+	});
+
+
+	if(req.url == '/Pages'){
 		con.query('SELECT name FROM rooms', (err, result) => {
 			if(err){
 				res.writeHead(500);
@@ -21,6 +30,21 @@ function get(req, res){
 				console.log(result);
 				res.end(result);
 			}
+		});
+	}
+	
+	else if(req.url == '/Messages'){
+		con.query('SELECT message FROM ?', req.search('room'), (err, result) => {
+			if(err){
+				res.writeHead(500);
+			}
+			else{
+				res.writeHead(200);
+				console.log(result.toString());
+				res.end(result);
+			}
 		})
 	}
 }
+
+

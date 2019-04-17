@@ -3,16 +3,18 @@ const mysql = require('mysql');
 const con = mysql.createConnection({
 	host: 'localhost',
 	user: 'serveradmin',
-	password: 'Cm%!a3C7^l',
+	password: 'Cm%!35Oa3C7^l',
 	database: 'chat'
 });
 
-con.connect((err) => {
-	if(err) throw err;
-	console.log("connection established");
-});
 
-function Post(req, res) {
+exports.post = function (req, res) {
+
+	con.connect((err) => {
+		if(err) throw err;
+		console.log("Connection established for Posts");
+	});
+
 	console.log(req.url);
 
 	var value = {'room': req.search('room'), 'user': req.search('user'), 
@@ -35,8 +37,6 @@ function Post(req, res) {
 	con.end((err) => {
 		if(err) throw err;
 		console.log('Connection Terminated.');
-})
+	})
 
 }
-
-module.exports = Post;

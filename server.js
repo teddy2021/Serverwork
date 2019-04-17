@@ -6,6 +6,7 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 
+const getter = require('./get.js');
 const poster = require('./post.js');
 const port = process.env.PORT || 8080;
 
@@ -40,10 +41,14 @@ const server = http.createServer((req, resp) => {
 			contentType = 'image/jpg';
 			break;
 	}
-
-
+	console.log(method)
 	if(method == 'GET'){
 	// try to read the file
+		if(req.url == '/Pages' || req.url == '/Messages'){
+
+			getter.get(req, resp);
+		}
+		else{
 		fs.readFile(filePath, (err, data) => {
 			if (err){
 				if(err.code == 'ENOENT'){
@@ -62,6 +67,7 @@ const server = http.createServer((req, resp) => {
 				resp.end(data, 'utf8');
 			}
 		});
+		}
 	}
 	else if(method == 'POST'){
 		poster.post(req, resp);
