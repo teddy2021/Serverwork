@@ -12,7 +12,7 @@ const port = process.env.PORT || 8080;
 
 const server = http.createServer((req, resp) => {
 
-	console.log(req.url);
+	
 	var method = req.method;
 	// obtain the path to requested file
 	let filePath = path.join(__dirname, 'public', req.url == '/' ? 'hub.html' : req.url);
@@ -41,7 +41,6 @@ const server = http.createServer((req, resp) => {
 			contentType = 'image/jpg';
 			break;
 	}
-	console.log(method)
 	if(method == 'GET'){
 	// try to read the file
 		if(req.url == '/Pages' || req.url == '/Messages'){

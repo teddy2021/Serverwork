@@ -1,5 +1,7 @@
 const mysql = require('mysql');
 
+// Post
+
 const con = mysql.createConnection({
 	host: 'localhost',
 	user: 'serveradmin',
@@ -10,24 +12,21 @@ const con = mysql.createConnection({
 
 exports.post = function (req, res) {
 
-	con.connect((err) => {
-		if(err) throw err;
-		console.log("Connection established for Posts");
-	});
 
 	console.log(req.url);
 
-	var value = {'room': req.search('room'), 'user': req.search('user'), 
-		'text': req.search('text')};
 
 	if(req.url == 'New'){
+		var value = {room: req.room};
 		con.query('INSERT INTO rooms (name, url) VALUES(?, ?)', value.room, '/' + value.room, (err) =>{
 			if(err) res.writeHead(500);
 			res.writeHead(200);
 		});
 	}
 	else if(req.url == 'Messages'){
-		con.query('INSERT INTO ? (user, message), (?, ?)', values.room, value.user, value.text, (err) => {
+		var value = {room: req.room, user: req.user, 
+			text: req.text};
+		con.query('INSERT INTO ? (user, message), (?, ?)', value.room, value.user, value.text, (err) => {
 			if(err) res.writeHead(500);
 			res.writeHead(200);
 		});
@@ -38,5 +37,4 @@ exports.post = function (req, res) {
 		if(err) throw err;
 		console.log('Connection Terminated.');
 	})
-
 }

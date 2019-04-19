@@ -120,11 +120,9 @@
 
     $('#sub').on('click', function(){
         var room = $('#ntitle').val();
-        $.ajax({
+        $.post({
             url: "New",
-            method: 'POST',
             data: {title: room},
-            dataType: 'string',
             success: function() {
                 console.log(room);
                 $('#title').text(room);
@@ -151,9 +149,8 @@
     function getPages(){
         var ttl = $('#title').text();
         console.log(ttl);
-        $.ajax({
+        $.get({
             url: "Messages",
-            method: 'GET',
             data: {title: ttl, origin: 'Pages'},
             success: function(data) {
                 var txt = data.split("\n");

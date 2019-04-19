@@ -1,5 +1,7 @@
 const mysql = require('mysql');
 
+// Get
+
 const con = mysql.createConnection({
 	host:'localhost',
 	user:'serveradmin',
@@ -10,38 +12,34 @@ const con = mysql.createConnection({
 
 
 exports.get = function (req, res){
-	con.connect((err) => {
-		if(err){
-			throw err;
-		}
-		else{
-			console.log('Connection established for Gets');
-		}
-	});
 
+	console.log(req.url);
+	console.log(req.params);
 
 	if(req.url == '/Pages'){
-		con.query('SELECT name FROM rooms', (err, result) => {
+		con.query('SELECT name FROM rooms', (err, result, fields) => {
 			if(err){
 				res.writeHead(500);
 			}
 			else{
 				res.writeHead(200);
-				console.log(result);
-				res.end(result);
+				for(var i = 0; i < result.lengt; i += 1){
+					console.log(result[i].name);
+				}
 			}
 		});
 	}
 	
 	else if(req.url == '/Messages'){
-		con.query('SELECT message FROM ?', req.search('room'), (err, result) => {
+		con.query('SELECT message FROM ?', req.ttl, (err, result) => {
 			if(err){
 				res.writeHead(500);
 			}
 			else{
 				res.writeHead(200);
-				console.log(result.toString());
-				res.end(result);
+				for(var i = 0; i < result.length; i += 1){
+					console.log(result[i].text);
+				}
 			}
 		})
 	}
