@@ -100,14 +100,15 @@
     // Jquery for home page
 
     $('#home').on('pagebeforeshow', function() {
-        $.get('Pages', function(data) {
-            var txt = data.split("\n");
-            if ($('#rooms').val() != data) {
-            for (var i = 0; i < txt.length; i += 1) {
-                $('#rooms').append(txt[i]);
-            }
-        }
-        });
+	    $.get('Pages', (data) => {
+		    console.log(data)
+		    for (var i = 0; i < data.length; i += 1){
+			    console.log('individual name: ' + data[i].name )
+			    if(data[i].name != 'null'){
+				    $('#rooms').append('<a href=#chat>' + data[i].name + '</a><br>');
+			    }
+		    }
+	    });
     });
 
     $('#home').on('pagebeforehide', function(){

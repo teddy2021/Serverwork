@@ -13,36 +13,21 @@ const con = mysql.createConnection({
 
 exports.get = function (req, res){
 
-	console.log(req.url);
-	console.log(req.params);
 
 	if(req.url == '/Pages'){
-		con.query('SELECT name FROM rooms', (err, result, fields) => {
+		con.query('SELECT * FROM rooms', (err, result, fields) => {
 			if(err){
 				res.writeHead(500);
+				throw err;
 			}
 			else{
-				res.writeHead(200);
-				for(var i = 0; i < result.lengt; i += 1){
-					console.log(result[i].name);
-				}
+				res.writeHead(200, {'Content-Type' : 'application/json'});
+				res.write(JSON.stringify(result));
+				res.end();
 			}
 		});
 	}
-	
-	else if(req.url == '/Messages'){
-		con.query('SELECT message FROM ?', req.ttl, (err, result) => {
-			if(err){
-				res.writeHead(500);
-			}
-			else{
-				res.writeHead(200);
-				for(var i = 0; i < result.length; i += 1){
-					console.log(result[i].text);
-				}
-			}
-		})
-	}
+
 }
 
 
