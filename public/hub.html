@@ -152,7 +152,7 @@
         console.log(ttl);
         $.get({
             url: "Messages",
-            data: {title: ttl, origin: 'Pages'},
+            data: {title: ttl},
             success: function(data) {
                 var txt = data.split("\n");
                 console.log(txt);

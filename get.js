@@ -17,7 +17,7 @@ exports.get = function (req, res){
 	if(req.url == '/Pages'){
 		con.query('SELECT * FROM rooms', (err, result, fields) => {
 			if(err){
-				res.writeHead(500);
+				res.writeHead(500, {'Content-Type': 'text/html'});
 				throw err;
 			}
 			else{
@@ -26,6 +26,19 @@ exports.get = function (req, res){
 				res.end();
 			}
 		});
+	}
+	else if(req.url == '/Messages'){
+		con.query('SELECT * FROM ? ORDER BY dt', req.title, (err, result, fields) => {
+			if(err){
+				res.writeHead(500, {'Content-Type': 'text/html'});
+				res.end();
+			}
+			else{
+				res.writeHead(200, {'Content-Type': 'application/json'});
+				res.write(JSON.stringify(result));
+				res.end();
+			}
+		})
 	}
 
 }
