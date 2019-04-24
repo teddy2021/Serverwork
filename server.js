@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 const getter = require('./get.js');
+const poster = require('./post.js');
 const port = process.env.PORT || 8080;
 
 const server = http.createServer((req, resp) => {
@@ -41,6 +42,7 @@ const server = http.createServer((req, resp) => {
 			break;
 	}
 	if(method == 'GET'){
+		console.log('GET request for ' + req.url);
 	// try to read the file
 		if(req.url == '/Pages' || req.url == '/Messages'){
 
@@ -67,6 +69,10 @@ const server = http.createServer((req, resp) => {
 			});
 		}
 	
+	}
+	else if(method == 'POST'){
+		console.log('POST request for ' + req.url);
+		poster.post(req, resp)
 	}
 });
 

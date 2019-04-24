@@ -103,7 +103,6 @@
 	    $.get('Pages', (data) => {
 		    console.log(data)
 		    for (var i = 0; i < data.length; i += 1){
-			    console.log('individual name: ' + data[i].name )
 			    if(data[i].name != 'null'){
 				    $('#rooms').append('<a href=#chat>' + data[i].name + '</a><br>');
 			    }
@@ -119,53 +118,38 @@
         $.mobile.changePage('#chat');
     });
 
+
+    <!-- Submit request to create new room-->
     $('#sub').on('click', function(){
         var room = $('#ntitle').val();
-        $.post({
-            url: "New",
-            data: {title: room},
-            success: function() {
+        $.post('New',{title: room}, (result) => {
                 console.log(room);
                 $('#title').text(room);
                 $.mobile.changePage('#chat');
-
-            }
         });
     });
 
 
-    $('document').ready(function() {
-        $('#rooms').on('click', 'a', function () {
-            $('#title').text($(this).text());
-        });
+    $('#rooms').on('click', 'a', function () {
+        $('#title').text($(this).text());
     });
 
     // Jquery for chat page
 
     $('#chat').on('pagebeforeshow', function(){
-        getPages()
+        getMessages()
 
     });
 
-    function getPages(){
+    function getMessages(){
         var ttl = $('#title').text();
         console.log(ttl);
         $.get({
             url: "Messages",
             data: {title: ttl},
             success: function(data) {
-                var txt = data.split("\n");
-                console.log(txt);
-                console.log(txt.length);
-                for (var i = 0; i < txt.length; i += 1) {
-                    var pair = txt[i];
-                    pair = pair.split(":");
-                    var usr = pair[0];
-                    var msg = pair[1];
-                    if (typeof(msg) != "undefined") {
-                        $('#messages').append('<div class="green_box"><span>' + pair[1] + '</span></div>');
-                        $('#messages').append('<br><br>');
-                    }
+                for (var i = 0; i < data.length; i += 1) {
+			$('#messages').append('<div class="green_box"><span>'+ data[i].text + '</span></div>');
                 }
                 setTimeout(checkChanged(), 30000);
             }
@@ -174,12 +158,13 @@
 
     $('#chat').on('pagebeforehide', function () {
         $('#messages').empty();
+	$('#title').val('');
     });
 
         $('#send').on('click', function () {
             var message = $('#editor').val();
             var room = $('#title').text();
-            $.post("Messages", {user: "n/a", message: message, room: room}, function (data) {
+	    $.post("Messages", {user: "n/a", message: message, room: room}, (data) => {
                 $('#messages').append('<div class="blue_box"><span>' + message + '</span></div>');
                 $('#editor').val('');
             })
@@ -196,7 +181,7 @@
             data: {room: room},
             success: function (){
                 $('#messages').empty();
-                getPages()
+                getMessages()
             }
         })
     }
