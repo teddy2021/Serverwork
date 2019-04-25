@@ -71,7 +71,6 @@ const server = http.createServer((req, resp) => {
 	
 	}
 	else if(method == 'POST'){
-		console.log('POST request for ' + req.url + ' for room ' + req.room);
 		poster.post(req, resp);
 		resp.end();
 	}

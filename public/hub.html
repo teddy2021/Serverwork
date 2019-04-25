@@ -116,17 +116,19 @@
 
     $('#home').on('pagebeforehide', function(){
         $.mobile.changePage('#chat');
+	$('#ntitle').clear();
     });
 
 
     <!-- Submit request to create new room-->
     $('#sub').on('click', function(){
         var room = $('#ntitle').val();
-	$.post('New',{'title': room.toString()}, (result) => {
-                console.log(room);
-                $('#title').text(room);
-                $.mobile.changePage('#chat');
-        });
+	$.post('New',JSON.stringify({room: room}), () => {
+		console.log(room);
+		$('#title').text(room);
+		$.mobile.changePage('#chat');
+		console.log('Everything worked right');
+	});
     });
 
 
@@ -164,7 +166,7 @@
         $('#send').on('click', function () {
             var message = $('#editor').val();
             var room = $('#title').text();
-	    $.post("Messages", {user: "n/a", message: message, room: room}, (data) => {
+	    $.post("Messages", JSON.stringify({user: "n/a", message: message, room: room}), (data, status, xhr) => {
                 $('#messages').append('<div class="blue_box"><span>' + message + '</span></div>');
                 $('#editor').val('');
             })

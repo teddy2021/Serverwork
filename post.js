@@ -13,57 +13,63 @@ const con = mysql.createConnection({
 
 exports.post = function (req, res){
 
+	var values;
 	var status = 200;
 	var content = 'text/html';
 
-	if(req.url == '/New'){
-		console.log('Starting posting new Room ' + req.room);
-		con.query('INSERT INTO rooms (name, url) VALUES(?,?)', 
-		[req.room, '/'+req.room],
-		(err) => {
-			if(err){
-				console.log('error while creating entry for room in rooms');
-				status = 500;
-				throw err;
-			}
-			else{
-				console.log('rooms entry successfully created');
-			}
-		});
-		
-		console.log('Creating room table');
-		con.query('CREATE TABLE IF NOT EXISTS ' + req.room + ' (user VARCHAR(30), text VARCHAR(200), dt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)',
-		req.room, 
-		(err) =>{
-			if(err){
-				console.log('error while creating room table');
-				status = 500;
-				throw err;
-			}
-			else{
-				console.log('room table successfully created');
-				status = 200;
-			}
-		});
-	}
-	else if(req.url == '/Messages'){
+	var body = '';
+	req.on('data', chunk => {
+		body += chunk;
+	});
 
-		console.log('Request to post to room: ' + req.room + ' with text ' + req.message);
-		con.query('INSERT INTO ' + req.room + ' (user, text) VALUES(?, ?)', 
-		[req.user, req.message], 
-		(err) => {
-			if(err){
-				console.log('error while posting message to rooms');
-				status = 500;
-				throw err;
-			}
-			else{
-				console.log('successfully posted to room');
-				status = 200;
-			}
-		});
-	}
+	req.on('end', ()=>{
+		values = JSON.parse(body);
+		console.log(values.room);
 
+		if(req.url == '/New'){
+			console.log('Starting posting new Room ' + values.room);
+			con.query('INSERT INTO rooms (name, url) VALUES(?,?)', [values.room, '/' + values.room],
+			(err) => {
+				if(err){
+					console.log('error while creating entry for room in rooms');
+					status = 500;
+				}
+				else{
+					console.log('rooms entry successfully created');
+				}
+			});
+			
+			console.log('Creating room table');
+			con.query('CREATE TABLE IF NOT EXISTS ' + values.room + ' (user VARCHAR(30), text VARCHAR(200), dt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)',
+			req.room, 
+			(err) =>{
+				if(err){
+					console.log('error while creating room table');
+					status = 500;
+				}
+				else{
+					console.log('room table successfully created');
+					status = 200;
+				}
+			});
+		}
+		else if(req.url == '/Messages'){
+
+			console.log('Request to post to room: ' + values.room + ' with text ' + values.message);
+			con.query('INSERT INTO ' + values.room + ' (user, text) VALUES(?, ?)', 
+			[values.user, values.message], 
+			(err) => {
+				if(err){
+					console.log('error while posting message to rooms');
+					status = 500;
+				}
+				else{
+					console.log('successfully posted to room');
+					status = 200;
+				}
+			});
+		}
+	});
 	res.writeHead(status, {'Content-Type': content});
 }
 
