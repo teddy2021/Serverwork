@@ -57,10 +57,10 @@
             <label for="add">Create a new room</label>
             <br>
 
-            <form id="add">
+            <div id="add">
                 <input type="text" id="ntitle" required>
                 <button id="sub">Create</button>
-            </form>
+            </div>
         </div>
 
 
@@ -103,7 +103,7 @@
 	    $.get('Pages', (data) => {
 		    console.log(data)
 		    for (var i = 0; i < data.length; i += 1){
-			    if(data[i].name != 'null'){
+			    if(data[i].name != 'null' && data[i].name != 'NULL'){
 				    $('#rooms').append('<a href=#chat>' + data[i].name + '</a><br>');
 			    }
 		    }
@@ -122,7 +122,7 @@
     <!-- Submit request to create new room-->
     $('#sub').on('click', function(){
         var room = $('#ntitle').val();
-        $.post('New',{title: room}, (result) => {
+	$.post('New',{'title': room.toString()}, (result) => {
                 console.log(room);
                 $('#title').text(room);
                 $.mobile.changePage('#chat');
